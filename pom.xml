@@ -6,6 +6,7 @@
         <module>model</module>
         <module>common</module>
         <module>service</module>
+        <module>hospital-manager</module>
     </modules>
 
     <parent>
