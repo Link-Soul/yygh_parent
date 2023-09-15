@@ -9,6 +9,7 @@ import com.atguigu.yygh.common.result.ResultCodeEnum;
 import com.atguigu.yygh.common.util.MD5;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
+import com.atguigu.yygh.model.hosp.Hospital;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,23 @@ public class ApiController {
 
     @Autowired
     private HospitalSetService hospitalSetService;
+
+    @PostMapping("hospital/show")
+    public Result getHospital(HttpServletRequest request){
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        //获取传过来的医院编号
+        String hospSign = (String) paramMap.get("sign");
+        String hoscode = (String)paramMap.get("hoscode");
+
+        //签名校验
+        String signKey = hospitalSetService.getSignKey(hoscode);
+        String signKeyMD5 = MD5.encrypt(signKey);
+        if (!signKeyMD5.equals(hospSign)){
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        Hospital byHoscode = hospitalService.getByHoscode(hoscode);
+        return Result.ok(byHoscode);
+    }
 
 
     @ApiOperation(value = "上传医院")
@@ -67,4 +85,24 @@ public class ApiController {
     }
 
 
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
