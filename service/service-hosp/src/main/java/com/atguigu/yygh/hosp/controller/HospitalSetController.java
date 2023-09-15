@@ -20,6 +20,7 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
+@CrossOrigin        //加上这个就允许跨域，也就是访问不同地址的url
 public class HospitalSetController {
 
     //注入service
@@ -56,18 +57,23 @@ public class HospitalSetController {
         Page<HospitalSet> page = new Page<>(current,limit);
         //构建条件
         QueryWrapper<HospitalSet> wrapper = new QueryWrapper<>();
-        String hosname = hospitalSetQueryVo.getHosname();//医院名称
-        String hoscode = hospitalSetQueryVo.getHoscode();//医院编号
-        if(!StringUtils.isEmpty(hosname)) {
-            wrapper.like("hosname",hospitalSetQueryVo.getHosname());
-        }
-        if(!StringUtils.isEmpty(hoscode)) {
-            wrapper.eq("hoscode",hospitalSetQueryVo.getHoscode());
+
+        if (!StringUtils.isEmpty(hospitalSetQueryVo)){
+            if(!StringUtils.isEmpty(hospitalSetQueryVo.getHosname())) {
+                wrapper.like("hosname",hospitalSetQueryVo.getHosname());
+            }
+            if(!StringUtils.isEmpty(hospitalSetQueryVo.getHoscode())) {
+                wrapper.eq("hoscode",hospitalSetQueryVo.getHoscode());
+            }
+        }else {
+            wrapper.like("hoscode",1);
         }
         //调用方法实现分页查询
         Page<HospitalSet> pageHospitalSet = hospitalSetService.page(page, wrapper);
         //返回结果
-        return Result.ok(pageHospitalSet);
+        Result<Page<HospitalSet>> ok = Result.ok(pageHospitalSet);
+
+        return ok;
     }
 
     //4 添加医院设置

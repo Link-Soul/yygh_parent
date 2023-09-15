@@ -1,4 +1,4 @@
-package com.atguigu.yygh.hosp;
+package com.atguigu.yygh.cmn;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,8 +7,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.atguigu")
-public class ServiceHospApplication {
+public class ServiceDictApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServiceHospApplication.class, args);
+        SpringApplication.run(ServiceDictApplication.class, args);
     }
 }
