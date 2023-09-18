@@ -10,10 +10,13 @@ import com.atguigu.yygh.common.util.MD5;
 import com.atguigu.yygh.hosp.service.DepartmentService;
 import com.atguigu.yygh.hosp.service.HospitalService;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
+import com.atguigu.yygh.hosp.service.ScheduleService;
 import com.atguigu.yygh.model.hosp.Department;
 import com.atguigu.yygh.model.hosp.Hospital;
+import com.atguigu.yygh.model.hosp.Schedule;
 import com.atguigu.yygh.vo.hosp.DepartmentQueryVo;
 
+import com.atguigu.yygh.vo.hosp.ScheduleQueryVo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,95 @@ public class ApiController {
 
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private ScheduleService scheduleService;
+
+    // 删除排班接口
+    @PostMapping("schedule/remove")
+    public Result remove(HttpServletRequest request){
+        //获取传过来的医院编号
+        Map<String, String[]> requestMap = request.getParameterMap();
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(requestMap);
+
+        // 医院编号
+        String hoscode = (String) paramMap.get("hoscode");
+        // 科室编号
+        String hosScheduleId = (String) paramMap.get("hosScheduleId");
+        //签名校验
+        String signKey = hospitalSetService.getSignKey(hoscode);
+        String hospSign = (String) paramMap.get("sign");
+        String encrypt = MD5.encrypt(signKey);
+        if (!encrypt.equals(hospSign)){
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        scheduleService.remove(hoscode,hosScheduleId);
+
+        return Result.ok();
+
+
+
+    }
+
+
+    // 查询排班接口
+    @PostMapping("schedule/list")
+    public Result findSchedule(HttpServletRequest request){
+        //获取传过来的医院编号
+        Map<String, String[]> requestMap = request.getParameterMap();
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(requestMap);
+
+        // 医院编号
+        String hoscode = (String) paramMap.get("hoscode");
+        // 科室编号
+        String depcode = (String) paramMap.get("depcode");
+        // page和limit不能如上这样直接写，如果为空则直接空指针
+        int page = StringUtils.isEmpty(paramMap.get("page"))
+                ? 1 : Integer.parseInt((String) paramMap.get("page"));
+        int limit = StringUtils.isEmpty(paramMap.get("limit"))
+                ? 1 : Integer.parseInt((String) paramMap.get("limit"));
+
+        //签名校验
+        String signKey = hospitalSetService.getSignKey(hoscode);
+        String hospSign = (String) paramMap.get("sign");
+        String encrypt = MD5.encrypt(signKey);
+        if (!encrypt.equals(hospSign)){
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+
+
+        ScheduleQueryVo scheduleQueryVo = new ScheduleQueryVo();
+        scheduleQueryVo.setHoscode(hoscode);
+        scheduleQueryVo.setDepcode(depcode);
+        Page<Schedule> pageModel = scheduleService.findPageSchedule(page,limit,scheduleQueryVo);
+
+
+        return Result.ok(pageModel);
+
+
+    }
+
+
+    // 上传排班接口
+    @PostMapping("saveSchedule")
+    public Result saveSchedule(HttpServletRequest request){
+        //获取传过来的医院编号
+        Map<String, String[]> requestMap = request.getParameterMap();
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(requestMap);
+        String hoscode = (String) paramMap.get("hoscode");
+        String depcode = (String) paramMap.get("depcode");
+
+        //TODD 签名校验
+        //签名校验
+        String signKey = hospitalSetService.getSignKey(hoscode);
+        String hospSign = (String) paramMap.get("sign");
+        String encrypt = MD5.encrypt(signKey);
+        if (!encrypt.equals(hospSign)){
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        scheduleService.save(paramMap);
+        return Result.ok();
+    }
+
 
 
     // 删除科室接口
