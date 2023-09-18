@@ -7,6 +7,7 @@
         <module>common</module>
         <module>service</module>
         <module>hospital-manager</module>
+        <module>service_client</module>
     </modules>
 
     <parent>
