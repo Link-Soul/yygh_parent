@@ -20,7 +20,8 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
-@CrossOrigin        //加上这个就允许跨域，也就是访问不同地址的url
+//@CrossOrigin        //加上这个就允许跨域，也就是访问不同地址的url
+// nginx有配置类统一跨域，这个就不需要了
 public class HospitalSetController {
 
     //注入service

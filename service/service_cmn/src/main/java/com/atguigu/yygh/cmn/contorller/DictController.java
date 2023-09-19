@@ -14,7 +14,8 @@ import java.util.List;
 @Api(tags = "数据字典接口")
 @RestController
 @RequestMapping("/admin/cmn/dict")
-@CrossOrigin
+//@CrossOrigin
+// nginx有配置类统一跨域，这个就不需要了
 public class DictController {
     @Autowired
     DictService dictService;

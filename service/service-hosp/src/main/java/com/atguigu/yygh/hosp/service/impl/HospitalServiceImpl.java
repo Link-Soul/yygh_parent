@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class HospitalServiceImpl implements HospitalService {
@@ -75,6 +73,41 @@ public class HospitalServiceImpl implements HospitalService {
         });
 
         return pages;
+    }
+
+    //更新医院上线状态
+    @Override
+    public void updateStatus(String id, Integer status) {
+        if (status ==0 || status == 1){
+            Hospital hospital = hospitalRepository.findById(id).get();
+            hospital.setStatus(status);
+            hospital.setUpdateTime(new Date());
+            hospitalRepository.save(hospital);
+        }
+    }
+
+    @Override
+    public Map<String,Object> getHospById(String id) {
+        Map<String,Object> map = new HashMap<>();
+
+        Hospital hospital = hospitalRepository.findById(id).get();
+        Hospital hospital1 = this.setHospitalHosType(hospital);
+        // 医院基本信息，包含医院等级
+        map.put("hospital",hospital1);
+        // 单独处理更直观
+        map.put("bookingRule",hospital1.getBookingRule());
+        // 不需要重复返回
+        hospital1.setBookingRule(null);
+        return map;
+    }
+    //获取医院名称
+    @Override
+    public String getHospName(String hoscode) {
+        Hospital hospitalByHoscode = hospitalRepository.getHospitalByHoscode(hoscode);
+        if (hospitalByHoscode!=null){
+            return hospitalByHoscode.getHosname();
+        }
+        return null;
     }
 
     private Hospital setHospitalHosType(Hospital hospital) {
