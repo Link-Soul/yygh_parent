@@ -1,4 +1,4 @@
-package com.atguigu.yygh.common.util;
+package com.atguigu.yygh.msm.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
